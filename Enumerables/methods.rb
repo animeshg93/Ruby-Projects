@@ -1,5 +1,6 @@
 module Enumerable
 	def my_each
+		i = 0
 		return self.to_enum if !block_given?
 		while i < self.size
 			yield(self[i])
@@ -9,41 +10,45 @@ module Enumerable
 	end
 
 	def my_each_with_index
+		i = 0
 		return self.to_enum if !block_given?
 		while i < self.size
-			yield(self(i), i)
+			yield(self[i], i)
 			i += 1
 		end
 		self
 	end
 
 	def my_select
+
 		return self.to_enum if !block_given?
 		ans = []
 		
-		self.my_each{
+		self.my_each{ |i|
 			ans << i if yield(i)
 		}
 		ans
 	end
 
 	def my_all?
+		i = 0
 		ans = true
 		return false if !block_given?
 		while i < self.size
-			if !yield(self(i))
+			if !yield(self[i])
 				ans = false
 			end
+			i += 1
 		end
 		ans
 	end
 
 	def my_any?
-		result = false
+		
 		self.my_each do |x|
-			result = true if yield(x) or !block_given?
+			return true unless yield(x)
 		end
-		result
+		return false
 	end
 
 	def my_none?
@@ -78,13 +83,24 @@ module Enumerable
 		return self.to_enum if !block_given?
 		result = []
 		self.my_each do |x|
-			result << yield(x)
+			result << my_proc.call(x)
 		end
 		result
 	end
 
-	def my_inject
-
-	my_each_with_index
-
+	def my_inject(initial_value = nil)
+		accum = 0
+		if !initial_value
+			self.my_each{ |x|
+			 accum = yield(accum, x)
+			}
+		else
+			for i in 1..self.length-1 do
+				accum = yield(accum, self[i])
+			end
+		end
+		accum
+	end
 end
+
+################################################          TESTS              #######################################################
