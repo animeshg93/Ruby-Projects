@@ -17,6 +17,8 @@ def bubble(array)
 	end	
 end
 
+
+
 a = [4,3,78,2,0,2]
 bubble(a)
 
